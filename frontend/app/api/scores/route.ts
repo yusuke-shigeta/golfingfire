@@ -1,24 +1,26 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma"; // さっき作ったファイルをインポート
 
-// 本来はDBから取得しますが、今はメモリ上の変数に保存します
-let scores = [
-  { id: 1, course: "Fire Country Club", score: 72 },
-];
-
-// データを取得する (GET)
+// DBから全スコアを取得する (GET)
 export async function GET() {
+  const scores = await prisma.score.findMany({
+    orderBy: { createdAt: "desc" }, // 新しい順に並べる
+  });
   return NextResponse.json(scores);
 }
 
-// データを保存する (POST)
+// DBに新しいスコアを保存する (POST)
 export async function POST(request: Request) {
   const body = await request.json();
-  const newScore = {
-    id: Date.now(),
-    course: body.course,
-    score: body.score || 0,
-  };
   
-  scores = [newScore, ...scores];
+  // prisma.score.create でDBに挿入！
+  const newScore = await prisma.score.create({
+    data: {
+      course: body.course,
+      score: Number(body.score) || 0, // 数字として保存
+      player: "Yusuke", // とりあえず固定
+    },
+  });
+
   return NextResponse.json(newScore);
 }

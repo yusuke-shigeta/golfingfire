@@ -51,3 +51,21 @@
     - docker compose up -d
   - Prisma（プリズマ）を導入する
     - コマンドは cd frontendで。
+  - スキーマ（設計図）を書く
+    - `prisma/schema.prisma`
+  - 設計図をDBに反映させる（マイグレーション）
+    - cd frontend
+    - `npx prisma migrate dev --name init`
+  - DBの中身を覗いてみる（Prisma Studio）
+    - コマンド
+      - cd frontend
+      - npx prisma studio
+    - オッケーそう
+  - Prismaを通じてDocker上のDBを読み書きする
+    - src/lib/prisma.tsを作成
+  - API（Route Handler）を書き換える
+    - src/app/api/scores/route.tsを書き換える
+  - 動作確認
+    - ダメ
+      - npx prisma generate
+        - 公式アダプター使わないとダメっぽい
