@@ -142,3 +142,10 @@ DBを操作するための「指示書」
 ## Front
 
 以下のコードに日本語訳をつけて。
+
+## MDX構築
+
+- `npm install @next/mdx @mdx-js/loader @mdx-js/react @types/mdx`
+- `frontend/next.config.mjs` の設定
+- `frontend/mdx-components.tsx` を作成
+- VsCodeプラグイン MDX をインストール
