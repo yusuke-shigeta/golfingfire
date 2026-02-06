@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function Home() {
   const [courseName, setCourseName] = useState("");
-  const [score, setScore] = useState(90); // スコア用のStateを追加
+  const [score, setScore] = useState(90);
   const [scores, setScores] = useState<any[]>([]);
 
   useEffect(() => {
@@ -17,6 +17,7 @@ export default function Home() {
     fetchScores();
   }, []);
 
+  // 2026/02/05 以下から日本語訳勉強start！！
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!courseName) return;
@@ -24,7 +25,6 @@ export default function Home() {
     const res = await fetch("/api/scores", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // score も一緒に送信するように変更！
       body: JSON.stringify({ course: courseName, score: score }),
     });
 
@@ -32,7 +32,7 @@ export default function Home() {
       const newScore = await res.json();
       setScores([newScore, ...scores]);
       setCourseName("");
-      setScore(90); // 入力後にリセット
+      setScore(90);
     }
   };
 

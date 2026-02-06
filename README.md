@@ -2,6 +2,15 @@
 
 自分に最適なゴルフクラブを探せるWebアプリ
 
+## バージョン
+
+```
+"next": "16.1.6",
+"react": "19.2.3",
+"@prisma/adapter-pg": "^7.3.0",
+"@prisma/client": "^7.3.0",
+```
+
 ## 環境構築
 
 - nodeインストール
@@ -50,22 +59,86 @@
   - データベースを起動する！
     - docker compose up -d
   - Prisma（プリズマ）を導入する
-    - コマンドは cd frontendで。
+    - コマンドは `cd frontend`で。
   - スキーマ（設計図）を書く
     - `prisma/schema.prisma`
   - 設計図をDBに反映させる（マイグレーション）
-    - cd frontend
+    - `cd frontend`
     - `npx prisma migrate dev --name init`
   - DBの中身を覗いてみる（Prisma Studio）
     - コマンド
-      - cd frontend
-      - npx prisma studio
+      - `cd frontend`
+      - `npx prisma studio`
     - オッケーそう
   - Prismaを通じてDocker上のDBを読み書きする
     - src/lib/prisma.tsを作成
   - API（Route Handler）を書き換える
-    - src/app/api/scores/route.tsを書き換える
+    - `src/app/api/scores/route.ts`を書き換える
   - 動作確認
     - ダメ
-      - npx prisma generate
+      - `npx prisma generate`
         - 公式アダプター使わないとダメっぽい
+
+## これまでやってきたこと
+
+### 登場人物
+
+#### PostgreSQL
+
+データを保管する場所（DB）
+
+巨大な倉庫
+
+#### Prisma
+
+DBを操作するための「指示書」
+
+倉庫の管理ソフト
+
+#### Next.js (API)
+
+ブラウザとDBを繋ぐ「窓口」
+
+注文を受ける店員
+
+## 各ファイルの役割
+
+### DB関連
+
+- `.env`（住所録・秘密のメモ）
+  - 役割
+    - データベースがどこにあるか（URL）を書いておく場所。
+  - 中身
+    - `DATABASE_URL="postgresql://..."`
+  - ポイント
+    - プログラムの中に直接パスワードを書くと危ないので、この別ファイルに切り出す。
+    - git管理しないこと。
+- `prisma/schema.prisma`（設計図）
+  - 役割
+    - 「データベースにどんなテーブルを作るか」を定義する、すべての源。
+  - 中身
+    - データの項目（`id`, `name`, `score`など）や、使用するデータベースの中身が書いてある。
+  - ポイント
+    - ここを書き換えて、`npx prisma generate` をすることで、プログラム側で使う「道具」が更新される。
+- `lib/prisma.ts`（DBへの専用テーブル）
+  - 役割
+    - アプリからDBへ接続するための「窓口（インスタンス）」を一つだけ作る場所。
+  - 中身
+    - 窓口の設定が書いてある。
+  - ポイント
+    - 接続をあちこちにバラバラに作るとDBがパンクしてしまうので、ここで「使い回せる一つのトンネル」として定義し、アプリ全体で共有する。
+- `app/api/scores/route.ts`（裏側の受付窓口）
+  - 役割
+    - ブラウザからのリクエスト（データの保存など）を実際に受け取る場所。
+  - 中身
+    - `export async function POST()`のような関数があり、届いたデータをprismaを使ってDBに保存する処理が書いてある。
+  - ポイント
+    - ユーザーが直接DBに触るのは危険なので、この「受付窓口」が中立ちをして安全にデータを扱う。
+
+#### 全体の流れ
+
+「設計図をもとにトンネルを通って受付が倉庫にデータを出し入れしている」
+
+## Front
+
+以下のコードに日本語訳をつけて。
